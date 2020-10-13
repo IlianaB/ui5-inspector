@@ -454,6 +454,28 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
 
         };
 
+        var elementRegistry = {
+            getRegisteredElements: function () {
+                var aResults = [],
+                    oElements = sap.ui.core.Element.registry.all();
+
+                Object.keys(oElements).forEach(function (sKey) {
+                    var oParent = oElements[sKey].getParent();
+
+                    aResults.push({
+                        id: oElements[sKey].getId(),
+                        type: oElements[sKey].getMetadata().getName(),
+                        isControl: oElements[sKey].isA("sap.ui.core.Control"),
+                        isRendered: oElements[sKey].isActive(),
+                        parentId: oParent && (oParent.isA("sap.ui.core.Control") || oParent.isA("sap.ui.core.Element")) ? oParent.getId() : '',
+                        aggregation: oElements[sKey].sParentAggregationName ? oElements[sKey].sParentAggregationName : ''
+                    })
+                })
+                debugger;
+                return aResults;
+            }
+        }
+
         // ================================================================================
         // Public API
         // ================================================================================
@@ -510,7 +532,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                 result.context = controlInformation._getBindingContextsForControl(control);
 
                 return result;
-            }
+            },
+
+            getRegisteredElements: elementRegistry.getRegisteredElements,
         };
 
     });

@@ -18,6 +18,7 @@
     var Splitter = require('../../../modules/ui/SplitContainer.js');
     var ODataDetailView = require('../../../modules/ui/ODataDetailView.js');
     var ODataMasterView = require('../../../modules/ui/ODataMasterView.js');
+    var OElementsRegistryMasterView = require('../../../modules/ui/OElementsRegistryMasterView.js');
 
     // Apply theme
     // ================================================================================
@@ -154,6 +155,25 @@
         }
     });
 
+    var oElementsRegistryMasterView = new OElementsRegistryMasterView('elements-registry-tab-master', {
+        /**
+         * Fired at first rendering of the ControlTree.
+         */
+        onInitialRendering: function () {
+            var controls = this.getData();
+            this.controls = controls;
+            //this.setSelectedElement(controls[0].id);
+        },
+
+        onSelectionChanged: function (selectedElementId) {
+            port.postMessage({
+                action: 'do-element-table-select',
+                target: selectedElementId
+            });
+        },
+    });
+
+
 
     // ================================================================================
     // Communication
@@ -211,6 +231,7 @@
         'on-receiving-initial-data': function (message) {
             controlTree.setData(message.controlTree);
             appInfo.setData(message.applicationInformation);
+            oElementsRegistryMasterView.setData(message.elementRegistry);
         },
 
         /**
